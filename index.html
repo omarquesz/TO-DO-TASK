@@ -3,91 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>To-Do List Mobile</title>
+    <title>Gerenciador Alviverde Dinâmico</title>
     <style>
-        :root { --primary: #8b5cf6; --accent: #ec4899; }
-        
+        :root {
+            --palmeiras-verde: #006437;
+            --palmeiras-accent: #06aa48;
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Container para a animação do fundo */
+        .bg-wrapper {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            z-index: -1;
+            background: url('https://jpimg.com.br/uploads/2023/04/conheca-a-historia-do-palmeiras-no-campeonato-brasileiro.jpg') no-repeat center center;
+            background-size: cover;
+            /* Animação nos eixos X e Y */
+            animation: moveBackground 20s linear infinite alternate;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(-5%, -5%); }
+            100% { transform: translate(5%, 2%); }
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a;
-            color: white;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Melhor para scroll no celular */
+            align-items: center;
             min-height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 15px;
+            overflow: hidden; /* Evita scroll por causa da animação do fundo */
         }
 
-        .app-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.5rem;
-            border-radius: 1.5rem;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(15px) saturate(160%);
+            -webkit-backdrop-filter: blur(15px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 30px;
             width: 100%;
-            max-width: 400px; /* Limita largura no PC, mas ocupa 100% no celular */
+            max-width: 380px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            text-align: center;
+            position: relative;
         }
 
-        .input-box {
+        h2 {
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+        }
+
+        .input-group {
             display: flex;
-            flex-direction: column; /* Empilha no celular se necessário */
             gap: 10px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 25px;
         }
 
-        input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        input[type="text"] {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
+            padding: 12px 15px;
+            border-radius: 12px;
             color: white;
-            padding: 15px;
-            border-radius: 1rem;
-            font-size: 16px; /* Evita zoom automático no iOS ao focar */
             outline: none;
-        }
-
-        button.add-btn {
-            background: linear-gradient(to right, var(--primary), var(--accent));
-            border: none;
-            color: white;
-            padding: 15px;
-            border-radius: 1rem;
-            font-weight: bold;
-            cursor: pointer;
             font-size: 16px;
         }
 
-        ul { list-style: none; padding: 0; margin: 0; }
+        .btn-add {
+            background: var(--palmeiras-verde);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        ul { list-style: none; padding: 0; text-align: left; }
 
         li {
-            background: rgba(255, 255, 255, 0.03);
-            margin-bottom: 12px;
-            padding: 18px; /* Área de toque maior */
-            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
-            touch-action: manipulation; /* Otimiza o toque */
+            color: white;
         }
 
-        .completed span { text-decoration: line-through; opacity: 0.5; }
+        .done { text-decoration: line-through; opacity: 0.5; }
 
-        /* Estilo do Checkbox maior para o dedo */
         input[type="checkbox"] {
-            width: 25px;
-            height: 25px;
-            margin-right: 15px;
-            accent-color: var(--primary);
+            width: 22px; height: 22px; margin-right: 15px;
+            accent-color: var(--palmeiras-accent);
         }
+
+        .balloon {
+            position: absolute; width: 8px; height: 8px;
+            background: #fff; border-radius: 50%;
+            pointer-events: none; animation: float 0.7s forwards;
+        }
+
+        @keyframes float { 100% { transform: translateY(-70px); opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div class="app-card">
-    <h2 style="text-align: center; font-weight: 300;">Tasks Mobile</h2>
-    <div class="input-box">
-        <input type="text" id="taskInput" placeholder="Digite sua tarefa...">
-        <button class="add-btn" onclick="addTask()">ADICIONAR</button>
+<div class="bg-wrapper"></div>
+
+<div class="glass-card">
+    <h2>Gerenciador de Tarefas</h2>
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Próxima meta do Verdão...">
+        <button class="btn-add" onclick="addTask(event)">+</button>
     </div>
     <ul id="taskList"></ul>
 </div>
@@ -97,42 +137,52 @@
     const taskList = document.getElementById('taskList');
 
     window.onload = () => {
-        const saved = JSON.parse(localStorage.getItem('mobileTasks')) || [];
+        const saved = JSON.parse(localStorage.getItem('palmeirasDynamicTasks')) || [];
         saved.forEach(t => renderTask(t.text, t.done));
     };
 
-    function saveToStorage() {
-        const tasks = [];
-        document.querySelectorAll('li').forEach(li => {
-            tasks.push({
-                text: li.querySelector('span').innerText,
-                done: li.querySelector('input').checked
-            });
-        });
-        localStorage.setItem('mobileTasks', JSON.stringify(tasks));
+    function save() {
+        const tasks = Array.from(document.querySelectorAll('li')).map(li => ({
+            text: li.querySelector('span').innerText,
+            done: li.querySelector('input').checked
+        }));
+        localStorage.setItem('palmeirasDynamicTasks', JSON.stringify(tasks));
+    }
+
+    function pop(x, y) {
+        for(let i=0; i<5; i++){
+            const b = document.createElement('div');
+            b.className = 'balloon';
+            b.style.left = x + (Math.random()*16 - 8) + 'px';
+            b.style.top = y + 'px';
+            document.body.appendChild(b);
+            setTimeout(() => b.remove(), 700);
+        }
     }
 
     function renderTask(text, done = false) {
         const li = document.createElement('li');
-        if(done) li.className = 'completed';
+        if(done) li.className = 'done';
         li.innerHTML = `
-            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTask(this)">
+            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggle(this, event)">
             <span>${text}</span>
         `;
         taskList.appendChild(li);
     }
 
-    function addTask() {
-        if (taskInput.value.trim() !== "") {
+    function addTask(e) {
+        if(taskInput.value.trim()){
+            pop(e.clientX, e.clientY);
             renderTask(taskInput.value);
-            saveToStorage();
+            save();
             taskInput.value = "";
         }
     }
 
-    function toggleTask(check) {
-        check.parentElement.classList.toggle('completed');
-        saveToStorage();
+    function toggle(check, e) {
+        if(check.checked) pop(e.clientX, e.clientY);
+        check.parentElement.classList.toggle('done');
+        save();
     }
 </script>
 </body>
