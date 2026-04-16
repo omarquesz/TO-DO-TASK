@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>To-Do List Mobile</title>
+    <style>
+        :root { --primary: #8b5cf6; --accent: #ec4899; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Melhor para scroll no celular */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 400px; /* Limita largura no PC, mas ocupa 100% no celular */
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column; /* Empilha no celular se necessário */
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px;
+            border-radius: 1rem;
+            font-size: 16px; /* Evita zoom automático no iOS ao focar */
+            outline: none;
+        }
+
+        button.add-btn {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        li {
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 12px;
+            padding: 18px; /* Área de toque maior */
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            touch-action: manipulation; /* Otimiza o toque */
+        }
+
+        .completed span { text-decoration: line-through; opacity: 0.5; }
+
+        /* Estilo do Checkbox maior para o dedo */
+        input[type="checkbox"] {
+            width: 25px;
+            height: 25px;
+            margin-right: 15px;
+            accent-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-card">
+    <h2 style="text-align: center; font-weight: 300;">Tasks Mobile</h2>
+    <div class="input-box">
+        <input type="text" id="taskInput" placeholder="Digite sua tarefa...">
+        <button class="add-btn" onclick="addTask()">ADICIONAR</button>
+    </div>
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+
+    window.onload = () => {
+        const saved = JSON.parse(localStorage.getItem('mobileTasks')) || [];
+        saved.forEach(t => renderTask(t.text, t.done));
+    };
+
+    function saveToStorage() {
+        const tasks = [];
+        document.querySelectorAll('li').forEach(li => {
+            tasks.push({
+                text: li.querySelector('span').innerText,
+                done: li.querySelector('input').checked
+            });
+        });
+        localStorage.setItem('mobileTasks', JSON.stringify(tasks));
+    }
+
+    function renderTask(text, done = false) {
+        const li = document.createElement('li');
+        if(done) li.className = 'completed';
+        li.innerHTML = `
+            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTask(this)">
+            <span>${text}</span>
+        `;
+        taskList.appendChild(li);
+    }
+
+    function addTask() {
+        if (taskInput.value.trim() !== "") {
+            renderTask(taskInput.value);
+            saveToStorage();
+            taskInput.value = "";
+        }
+    }
+
+    function toggleTask(check) {
+        check.parentElement.classList.toggle('completed');
+        saveToStorage();
+    }
+</script>
+</body>
+</html>
